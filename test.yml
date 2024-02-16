@@ -1,0 +1,62 @@
+command: "kurtosis"
+description: "A CLI for interacting with the Kurtosis engine"
+
+helpFlags:
+  - "-h"
+  - "--help"
+
+choices:
+  LogLevelChoices:
+    - "panic"
+    - "fatal"
+    - "error"
+    - "warning"
+    - "info"
+    - "debug"
+    - "trace"
+  AnalyticsActionChoices:
+    - "enable"
+    - "disable"
+    - "id"
+
+# These are global parameters, applicable to whichever route
+# TODO how do you distinguish global params from params for the root?
+params:
+  logLevel:
+    help: "Sets the level that the CLI will log at"
+    type: string
+    choices: LogLevelChoices
+    default:
+      value: "info"  # This makes the parameter optional
+      flag: "--cli-log-level"
+  isDebugMode:
+    help: "Whether should enable Kurtosis in debug mode. The debug mode will use the Kurtosis container debug images version (only enabled for the engine server so far)"
+    type: bool
+    default:
+      value: false
+      flag: "--debug-mode"
+
+subcommands:
+  analytics:
+    shortDescription: "Control Kurtosis's anonymous aggregate user behavior analytics"
+    longDescription: |
+      Control Kurtosis's anonymous aggregate user behavior analytics. Read more at
+      https://docs.kurtosis.com/advanced-concepts/metrics-philosophy"
+    params:
+      action:
+        type: AnalyticsAction
+        help: "The analytics action to be taken"
+
+  clean:
+    shortDescription: "Cleans up Kurtosis leftover artifacts"
+    longDescription: "Removes stopped enclaves (and live ones if the 'all' flag is set), as well as stopped engine containers"
+    params:
+      shouldCleanAll:
+        help: "If set, removes running enclaves as well"
+        type: bool
+        default:
+          value: false
+          flag: ["-a", "--all"]
+
+  enclave:
+    version:
